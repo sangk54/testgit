@@ -1,0 +1,66 @@
+Index: libatasmart-0.19/src/strpool/Makefile.in
+===================================================================
+--- libatasmart-0.19.orig/src/strpool/Makefile.in
++++ libatasmart-0.19/src/strpool/Makefile.in
+@@ -118,7 +118,8 @@ BUILD_LDFLAGS = @BUILD_LDFLAGS@
+ CC = @CC_FOR_BUILD@
+ CCDEPMODE = @CCDEPMODE@
+ CC_FOR_BUILD = @CC_FOR_BUILD@
+-CFLAGS = @CFLAGS@
++CFLAGS_FOR_STRPOOL = @CFLAGS_FOR_STRPOOL@
++CFLAGS = ${CFLAGS_FOR_STRPOOL}
+ CPP = @CPP@
+ CPPFLAGS = @CPPFLAGS@
+ CYGPATH_W = @CYGPATH_W@
+@@ -313,18 +314,18 @@ distclean-compile:
+ @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+ 
+ strpool.o: ../strpool.c
+-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT strpool.o -MD -MP -MF $(DEPDIR)/strpool.Tpo -c -o strpool.o `test -f '../strpool.c' || echo '$(srcdir)/'`../strpool.c
++@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) -MT strpool.o -MD -MP -MF $(DEPDIR)/strpool.Tpo -c -o strpool.o `test -f '../strpool.c' || echo '$(srcdir)/'`../strpool.c
+ @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/strpool.Tpo $(DEPDIR)/strpool.Po
+ @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../strpool.c' object='strpool.o' libtool=no @AMDEPBACKSLASH@
+ @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o strpool.o `test -f '../strpool.c' || echo '$(srcdir)/'`../strpool.c
++@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) -c -o strpool.o `test -f '../strpool.c' || echo '$(srcdir)/'`../strpool.c
+ 
+ strpool.obj: ../strpool.c
+-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT strpool.obj -MD -MP -MF $(DEPDIR)/strpool.Tpo -c -o strpool.obj `if test -f '../strpool.c'; then $(CYGPATH_W) '../strpool.c'; else $(CYGPATH_W) '$(srcdir)/../strpool.c'; fi`
++@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) -MT strpool.obj -MD -MP -MF $(DEPDIR)/strpool.Tpo -c -o strpool.obj `if test -f '../strpool.c'; then $(CYGPATH_W) '../strpool.c'; else $(CYGPATH_W) '$(srcdir)/../strpool.c'; fi`
+ @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/strpool.Tpo $(DEPDIR)/strpool.Po
+ @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../strpool.c' object='strpool.obj' libtool=no @AMDEPBACKSLASH@
+ @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o strpool.obj `if test -f '../strpool.c'; then $(CYGPATH_W) '../strpool.c'; else $(CYGPATH_W) '$(srcdir)/../strpool.c'; fi`
++@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) -c -o strpool.obj `if test -f '../strpool.c'; then $(CYGPATH_W) '../strpool.c'; else $(CYGPATH_W) '$(srcdir)/../strpool.c'; fi`
+ 
+ mostlyclean-libtool:
+ 	-rm -f *.lo
+Index: libatasmart-0.19/src/configure.ac
+===================================================================
+--- libatasmart-0.19.orig/src/configure.ac
++++ libatasmart-0.19/src/configure.ac
+@@ -97,6 +97,12 @@ CC_CHECK_FLAGS_APPEND([with_cflags], [CF
+         -fdata-sections])
+ AC_SUBST([WARNINGFLAGS], $with_cflags)
+ 
++AC_ARG_VAR(CFLAGS_STRPOOL, flags used for strpool compile process.)
++#AC_SUBST([CFLAGS_FOR_STRPOOL], bla2)
++#AC_SUBST([CFLAGS_FOR_STRPOOL], $cflags_strpool)
++AC_SUBST([CFLAGS_FOR_STRPOOL], $CFLAGS_STRPOOL)
++
++
+ CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [\
+         -Wl,--as-needed \
+         -Wl,--gc-sections])
+Index: libatasmart-0.19/src/strpool/Makefile.am
+===================================================================
+--- libatasmart-0.19.orig/src/strpool/Makefile.am
++++ libatasmart-0.19/src/strpool/Makefile.am
+@@ -19,6 +19,7 @@
+ CC = @CC_FOR_BUILD@
+ AM_CFLAGS = @BUILD_CFLAGS@
+ AM_LDFLAGS = @BUILD_LDFLAGS@
++CFLAGS_FOR_STRPOOL = @CFLAGS_FOR_STRPOOL@
+ 
+ noinst_PROGRAMS = \
+ 	strpool

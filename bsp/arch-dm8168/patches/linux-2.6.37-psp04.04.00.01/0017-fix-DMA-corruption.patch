@@ -1,0 +1,75 @@
+Index: kernel/linux-2.6.37-psp04.04.00.01/arch/arm/common/edma.c
+===================================================================
+--- kernel.orig/linux-2.6.37-psp04.04.00.01/arch/arm/common/edma.c	2012-08-30 05:48:03.000000000 -0600
++++ kernel/linux-2.6.37-psp04.04.00.01/arch/arm/common/edma.c	2015-12-07 08:20:09.836054863 -0600
+@@ -954,6 +954,35 @@
+ }
+ EXPORT_SYMBOL(edma_get_position);
+ 
++
++/**
++ * edma_get_position - returns the current transfer points
++ * @slot: parameter RAM slot being examined
++ * @src: pointer to source port position
++ *
++ * Returns current source and destination addresses for a particular
++ * parameter RAM slot.  Its channel should not be active when this is called.
++ */
++void edma_get_src_position(unsigned slot, dma_addr_t *pos)
++{
++	*pos = edma_parm_read(EDMA_CTLR(slot), PARM_SRC, EDMA_CHAN_SLOT(slot));
++}
++EXPORT_SYMBOL(edma_get_src_position);
++
++/**
++ * edma_get_position - returns the current transfer points
++ * @slot: parameter RAM slot being examined
++ * @src: pointer to source port position
++ *
++ * Returns current source and destination addresses for a particular
++ * parameter RAM slot.  Its channel should not be active when this is called.
++ */
++void edma_get_dest_position(unsigned slot, dma_addr_t *pos)
++{
++	*pos = edma_parm_read(EDMA_CTLR(slot), PARM_DST, EDMA_CHAN_SLOT(slot));
++}
++EXPORT_SYMBOL(edma_get_dest_position);
++
+ /**
+  * edma_set_src_index - configure DMA source address indexing
+  * @slot: parameter RAM slot being configured
+Index: kernel/linux-2.6.37-psp04.04.00.01/arch/arm/include/asm/hardware/edma.h
+===================================================================
+--- kernel.orig/linux-2.6.37-psp04.04.00.01/arch/arm/include/asm/hardware/edma.h	2012-08-30 05:48:03.000000000 -0600
++++ kernel/linux-2.6.37-psp04.04.00.01/arch/arm/include/asm/hardware/edma.h	2015-12-07 08:20:09.836054863 -0600
+@@ -189,6 +189,8 @@
+ void edma_set_dest(unsigned slot, dma_addr_t dest_port,
+ 				 enum address_mode mode, enum fifo_width);
+ void edma_get_position(unsigned slot, dma_addr_t *src, dma_addr_t *dst);
++void edma_get_src_position(unsigned slot, dma_addr_t *pos);
++void edma_get_dest_position(unsigned slot, dma_addr_t *pos);
+ void edma_set_src_index(unsigned slot, s16 src_bidx, s16 src_cidx);
+ void edma_set_dest_index(unsigned slot, s16 dest_bidx, s16 dest_cidx);
+ void edma_set_transfer_params(unsigned slot, u16 acnt, u16 bcnt, u16 ccnt,
+Index: kernel/linux-2.6.37-psp04.04.00.01/sound/soc/davinci/davinci-pcm.c
+===================================================================
+--- kernel.orig/linux-2.6.37-psp04.04.00.01/sound/soc/davinci/davinci-pcm.c	2013-10-10 14:42:55.000000000 -0600
++++ kernel/linux-2.6.37-psp04.04.00.01/sound/soc/davinci/davinci-pcm.c	2015-12-07 08:33:36.172048914 -0600
+@@ -639,11 +639,14 @@
+ 		}
+ 		asp_count = ram_count;
+ 	} else {
+-		edma_get_position(prtd->asp_channel, &asp_src, &asp_dst);
+-		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
++
++		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
++			edma_get_src_position(prtd->asp_channel, &asp_src);
+ 			asp_count = asp_src - runtime->dma_addr;
+-		else
++		} else {
++			edma_get_dest_position(prtd->asp_channel, &asp_dst);
+ 			asp_count = asp_dst - runtime->dma_addr;
++		}
+ 	}
+ 	spin_unlock(&prtd->lock);
+ 

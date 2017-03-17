@@ -1,0 +1,7 @@
+config FS_APPS_TINYXML
+	bool "tinyxml-2_6_2"
+	default n
+	select FS_APPS_GIFLIB
+	help
+	  TinyXML is a simple, small, minimal, C++ XML parser
+          that can be easily integrating into other programs.

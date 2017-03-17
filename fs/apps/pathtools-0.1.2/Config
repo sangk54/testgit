@@ -1,0 +1,5 @@
+config FS_APPS_PYTHON_PATHTOOLS
+        bool "pathtools 0.1.2 (python)"
+        select FS_APPS_PYTHON
+        help
+	Pattern matching and various utilities for file system paths

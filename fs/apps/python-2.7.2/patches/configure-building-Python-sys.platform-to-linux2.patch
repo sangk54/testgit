@@ -1,0 +1,24 @@
+Index: python-2.7.2/src/configure
+===================================================================
+--- python-2.7.2.orig/src/configure
++++ python-2.7.2/src/configure
+@@ -3003,6 +3003,7 @@ then
+ 	MACHDEP="$ac_md_system$ac_md_release"
+ 
+ 	case $MACHDEP in
++	linux*) MACHDEP="linux2";;
+ 	cygwin*) MACHDEP="cygwin";;
+ 	darwin*) MACHDEP="darwin";;
+ 	atheos*) MACHDEP="atheos";;
+Index: python-2.7.2/src/configure.in
+===================================================================
+--- python-2.7.2.orig/src/configure.in
++++ python-2.7.2/src/configure.in
+@@ -293,6 +293,7 @@ then
+ 	MACHDEP="$ac_md_system$ac_md_release"
+ 
+ 	case $MACHDEP in
++	linux*) MACHDEP="linux2";;
+ 	cygwin*) MACHDEP="cygwin";;
+ 	darwin*) MACHDEP="darwin";;
+ 	atheos*) MACHDEP="atheos";;

@@ -1,0 +1,50 @@
+Index: ezsdk-5_05_02_00/coprocessors.init.in
+===================================================================
+--- ezsdk-5_05_02_00.orig/coprocessors.init.in	2014-01-15 09:35:09.516686427 -0600
++++ ezsdk-5_05_02_00/coprocessors.init.in	2014-01-15 10:35:06.432659891 -0600
+@@ -5,29 +5,16 @@
+ DSP_ID=0
+ USE_V4L2_CAPTURE=@V4L2_ENABLE@
+ 
++#For DSP buffers that support 1080p frame resolution
++CMEM_MODPARAMS="phys_start=0x96C00000 phys_end=0x98000000 pools=8x1382400,8x4096"
++
+ case "$1" in
+ start)
+ 	prcm_config_app s > /dev/null
+ 	echo "Loading coprocessors modules..."
+ 	if [ -f /lib/modules/@KERNELVERSION@/kernel/drivers/dsp/cmemk.ko ] ; then
+-	    PHYS_START=@CMEM_START@
+-	    if [ -z "$PHYS_START" ] ; then
+-	        RESERVED_START=$(( `sed -e "s/.*mem=\([0-9]*\)M .*/\1 * 1024 * 1024/" /proc/cmdline` ))
+-	        # Some platforms like DM365 setup reserved video capture and display buffers on the reserver memory area
+-	        # so we are careful to avoid overlaping these areas with cmem
+-	        VIDEO_DISPLAY_BUFFERS_SIZE=$(( `( grep -q y.cont2 /proc/cmdline && sed -e "s/.*y.cont2_bufsize=\([0-9]*\) .*/+ \1/" /proc/cmdline ) || echo 0` ))
+-	        VIDEO_CAPTURE_BUFFERS_SIZE=$(( `( grep -q re.cont /proc/cmdline && sed -e 's/.*e.cont_bufsize=\([0-9]*\) .*/+ \1/' /proc/cmdline ) || echo 0` ))
+-	        PHYS_START=`printf '0x%x' $(( @RAM_BASE@ + $RESERVED_START + $VIDEO_DISPLAY_BUFFERS_SIZE + $VIDEO_CAPTURE_BUFFERS_SIZE ))`
+-	    fi
+-	    PHYS_END=`printf '0x%x' $(($PHYS_START + @CMEM_SIZE@))`
+-	    PHYS_END_INT=`printf '%d' $(($PHYS_START + @CMEM_SIZE@))`
+-	    if [ $PHYS_END_INT -gt @RAM_END_INT@ ] ; then
+-		echo "WARNING: the cmem allocation ends beyond the end of RAM registered for this hardware"
+-		echo "End of cmem: $PHYS_END, End of ram: @RAM_END@ \n"
+-	    fi
+-	    rmmod cmem 2>/dev/null || true
+-	    echo "  Loading cmem from $PHYS_START to $PHYS_END"
+-	    modprobe cmemk phys_start=$PHYS_START phys_end=$PHYS_END allowOverlap=1 useHeapIfPoolUnavailable=1 @CMEM_TCMSETTINGS@
++
++	    modprobe cmemk $CMEM_MODPARAMS allowOverlap=1 useHeapIfPoolUnavailable=1
+ 	fi
+ 	if [ -f /lib/modules/@KERNELVERSION@/kernel/drivers/dsp/syslink.ko ] ; then
+ 	    rmmod syslink 2>/dev/null || true
+@@ -41,10 +28,6 @@
+ 	    firmware_loader $HDVPSS_ID  /lib/firmware/@VPSS_FIRMWARE@ start -i2c @I2C_MODE@
+ 	fi
+ 	sleep 1
+-	if [ -f /lib/firmware/@DSP_FIRMWARE@ ] ; then
+-	    firmware_loader $DSP_ID  /lib/firmware/@DSP_FIRMWARE@ start -i2c @I2C_MODE@
+-	fi
+-	sleep 1
+ 	if [ -f /lib/modules/@KERNELVERSION@/kernel/drivers/video/ti81xx/vpss/vpss.ko ] ; then
+ 	    rmmod vpss 2>/dev/null || true
+ 	    modprobe vpss sbufaddr=0xBFB00000 i2c_mode=@I2C_MODE@
