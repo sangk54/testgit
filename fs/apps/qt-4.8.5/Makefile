@@ -24,6 +24,7 @@ LIBRARIES_OPTIONAL= \
 	/usr/lib/libQtOpenVG.so.$(QT_VERSION) \
 	/usr/lib/libQtScript.so.$(QT_VERSION) \
 	/usr/lib/libQtScriptTools.so.$(QT_VERSION) \
+	/usr/lib/libQtSvg.so.$(QT_VERSION) \
 	/usr/lib/libQtWebKit.so.4.9.3 \
 	/usr/lib/libpvrQWSWSEGL.so.1.0.0 \
 	/usr/lib/libpvrQWSWSEGL.so.1.0 \
@@ -71,7 +72,6 @@ CONFIG_OPTIONS= \
   -nomake translations \
   -no-accessibility \
   -no-audio-backend \
-  -no-declarative \
   -no-gif \
   -no-iconv \
   -no-javascript-jit \
@@ -96,6 +96,7 @@ CONFIG_OPTIONS= \
   -qt-mouse-linuxinput \
   -no-xinerama \
   -no-xkb \
+  -declarative \
   -no-gtkstyle
 
 
