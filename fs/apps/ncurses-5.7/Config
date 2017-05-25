@@ -5,10 +5,3 @@ config FS_APPS_NCURSES
           in System V Release 4.0, and more. It uses Terminfo format, supports pads
           and color and multiple highlights and forms characters and function-key
           mapping, and has all the other SYSV-curses enhancements over BSD Curses.
-
-config FS_APPS_NCURSES_WIDEC
-	bool "ncurses-5.7 wide character support"
-	depends on FS_APPS_NCURSES
-	default y
-	help
-	      compile ncurses with wide-char/UTF-8 code
