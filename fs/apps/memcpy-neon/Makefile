@@ -8,8 +8,8 @@ libmemcpy_neon.so: memcpy_neon.o
 	arm-none-linux-gnueabi-gcc -shared -Wl,-soname,libmemcpy_neon.so -o libmemcpy_neon.so memcpy_neon.o
 
 install: libmemcpy_neon.so
-	install libmemcpy_neon.so ../../../../fs/fs/usr/lib/
-	install libmemcpy_neon.so ../../../../fs/fsdev/usr/lib/
+	install libmemcpy_neon.so ../../fs/usr/lib/
+	install libmemcpy_neon.so ../../fsdev/usr/lib/
 
 clean:
-	rm -f libmemcpy_neon.so memcpy_neon.o ../../../../fs/fs/usr/lib/libmemcpy_neon.so ../../../../fs/fsdev/usr/lib/libmemcpy_neon.so *~
+	rm -f libmemcpy_neon.so memcpy_neon.o ../../fs/usr/lib/libmemcpy_neon.so ../../fsdev/usr/lib/libmemcpy_neon.so *~
