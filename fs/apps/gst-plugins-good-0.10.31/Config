@@ -27,6 +27,6 @@ config FS_APPS_GSTREAMER_PLUGINS_GOOD_NEON
 	bool "enable NEON memory copy"
 	default n
 	depends on FS_APPS_GSTREAMER_PLUGINS_GOOD_0_10_31
-	select USER_APPS_NEON_MEMCPY
+	select FS_APPS_NEON_MEMCPY
 	help
 	Compile with NEON memory copy support only for H264 and JPEG payloaders
