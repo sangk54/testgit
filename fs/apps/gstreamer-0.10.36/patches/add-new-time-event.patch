@@ -1,0 +1,43 @@
+---
+ src/gst/gstevent.c |    8 ++++++++
+ src/gst/gstevent.h |    1 +
+ 2 files changed, 9 insertions(+)
+
+Index: gstreamer-0.10.36/src/gst/gstevent.c
+===================================================================
+--- gstreamer-0.10.36.orig/src/gst/gstevent.c
++++ gstreamer-0.10.36/src/gst/gstevent.c
+@@ -127,6 +127,7 @@
+   {GST_EVENT_CUSTOM_DOWNSTREAM_OOB, "custom-downstream-oob", 0},
+   {GST_EVENT_CUSTOM_BOTH, "custom-both", 0},
+   {GST_EVENT_CUSTOM_BOTH_OOB, "custom-both-oob", 0},
++  {GST_EVENT_CUSTOM_TIME, "custom-both-time", 0},
+ 
+   {0, NULL, 0}
+ };
+@@ -959,6 +960,13 @@
+             GST_QUARK (TIMESTAMP)));
+ }
+ 
++GstEvent *
++gst_event_new_time (void)
++{
++  return gst_event_new (GST_EVENT_CUSTOM_TIME);
++}
++
++
+ /**
+  * gst_event_new_seek:
+  * @rate: The new playback rate
+Index: gstreamer-0.10.36/src/gst/gstevent.h
+===================================================================
+--- gstreamer-0.10.36.orig/src/gst/gstevent.h
++++ gstreamer-0.10.36/src/gst/gstevent.h
+@@ -146,6 +146,7 @@
+   GST_EVENT_STEP                  = GST_EVENT_MAKE_TYPE (19, FLAG(UPSTREAM)),
+ 
+   /* custom events start here */
++  GST_EVENT_CUSTOM_TIME	          = GST_EVENT_MAKE_TYPE (20, FLAG(BOTH)),
+   GST_EVENT_CUSTOM_UPSTREAM       = GST_EVENT_MAKE_TYPE (32, FLAG(UPSTREAM)),
+   GST_EVENT_CUSTOM_DOWNSTREAM     = GST_EVENT_MAKE_TYPE (32, FLAG(DOWNSTREAM) | FLAG(SERIALIZED)),
+   GST_EVENT_CUSTOM_DOWNSTREAM_OOB = GST_EVENT_MAKE_TYPE (32, FLAG(DOWNSTREAM)),

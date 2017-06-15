@@ -1,0 +1,42 @@
+---
+ src/libs/gst/base/gstbasesink.c |    6 +++++-
+ src/libs/gst/base/gstbasesink.h |    2 ++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+Index: gstreamer-0.10.36/src/libs/gst/base/gstbasesink.c
+===================================================================
+--- gstreamer-0.10.36.orig/src/libs/gst/base/gstbasesink.c
++++ gstreamer-0.10.36/src/libs/gst/base/gstbasesink.c
+@@ -569,6 +569,7 @@
+   klass->activate_pull =
+       GST_DEBUG_FUNCPTR (gst_base_sink_default_activate_pull);
+   klass->query = GST_DEBUG_FUNCPTR (default_sink_query);
++  klass->time_measure = NULL;
+ 
+   /* Registering debug symbols for function pointers */
+   GST_DEBUG_REGISTER_FUNCPTR (gst_base_sink_pad_getcaps);
+@@ -3023,7 +3024,10 @@
+       if (do_qos)
+         gst_base_sink_do_render_stats (basesink, FALSE);
+ 
+-      if (ret == GST_FLOW_STEP)
++      if (bclass->time_measure)
++		bclass->time_measure (basesink, pad);
++
++	  if (ret == GST_FLOW_STEP)
+         goto again;
+ 
+       if (G_UNLIKELY (basesink->flushing))
+Index: gstreamer-0.10.36/src/libs/gst/base/gstbasesink.h
+===================================================================
+--- gstreamer-0.10.36.orig/src/libs/gst/base/gstbasesink.h
++++ gstreamer-0.10.36/src/libs/gst/base/gstbasesink.h
+@@ -192,6 +192,8 @@
+ 
+   /*< private >*/
+   gpointer       _gst_reserved[GST_PADDING_LARGE-6];
++
++  void          (*time_measure)    (GstBaseSink *sink, GstPad *pad);
+ };
+ 
+ GType gst_base_sink_get_type(void);

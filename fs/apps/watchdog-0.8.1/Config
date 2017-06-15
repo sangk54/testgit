@@ -1,0 +1,5 @@
+config FS_APPS_PYTHON_WATCHDOG
+        bool "watchdog 0.8.1 (python)"
+        select FS_APPS_PYTHON
+        help
+	Python API and shell utilities to monitor file system events.        

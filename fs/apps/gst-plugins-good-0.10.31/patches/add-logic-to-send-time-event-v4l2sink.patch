@@ -1,0 +1,107 @@
+---
+ src/sys/v4l2/gstv4l2sink.c |   27 +++++++++++++++++++++++++++
+ src/sys/v4l2/gstv4l2sink.h |    1 +
+ 2 files changed, 28 insertions(+)
+
+Index: gst-plugins-good-0.10.31/src/sys/v4l2/gstv4l2sink.c
+===================================================================
+--- gst-plugins-good-0.10.31.orig/src/sys/v4l2/gstv4l2sink.c
++++ gst-plugins-good-0.10.31/src/sys/v4l2/gstv4l2sink.c
+@@ -73,6 +73,7 @@
+ #define PROP_DEF_QUEUE_SIZE         12
+ #define PROP_DEF_MIN_QUEUED_BUFS    2
+ #define DEFAULT_PROP_DEVICE   "/dev/video1"
++#define DEFAULT_MEASURE_TIME FALSE
+ 
+ enum
+ {
+@@ -89,6 +90,7 @@
+   PROP_CROP_WIDTH,
+   PROP_CROP_HEIGHT,
+   PROP_USERPOINTER,
++  PROP_MEASURE_TIME,
+ };
+ 
+ 
+@@ -233,6 +235,7 @@
+ static gboolean gst_v4l2sink_event (GstBaseSink * bsink, GstEvent * event);
+ static GstFlowReturn gst_v4l2sink_show_frame (GstBaseSink * bsink,
+     GstBuffer * buf);
++static void gst_v4l2sink_after_seek (GstBaseSink * bsink, GstPad * pad);
+ 
+ static void
+ gst_v4l2sink_base_init (gpointer g_class)
+@@ -324,12 +327,17 @@
+       g_param_spec_boolean("userpointer", "User Pointer",
+           "configures using user pointer for display without memcopy",
+            TRUE, G_PARAM_READWRITE));
++  g_object_class_install_property (gobject_class, PROP_MEASURE_TIME,
++      g_param_spec_boolean("measure-time", "Measure Time",
++          "Enable the property to send an event to measure the seek time",
++           FALSE, G_PARAM_READWRITE));
+ 
+   basesink_class->get_caps = GST_DEBUG_FUNCPTR (gst_v4l2sink_get_caps);
+   basesink_class->set_caps = GST_DEBUG_FUNCPTR (gst_v4l2sink_set_caps);
+   basesink_class->buffer_alloc = GST_DEBUG_FUNCPTR (gst_v4l2sink_buffer_alloc);
+   basesink_class->event = GST_DEBUG_FUNCPTR (gst_v4l2sink_event);
+   basesink_class->render = GST_DEBUG_FUNCPTR (gst_v4l2sink_show_frame);
++  basesink_class->time_measure = GST_DEBUG_FUNCPTR (gst_v4l2sink_after_seek);
+ }
+ 
+ static void
+@@ -359,6 +367,7 @@
+   v4l2sink->state = 0;
+   v4l2sink->gst_buf_array = NULL;
+   v4l2sink->enableUserPtr = TRUE;
++  v4l2sink->measure_time = DEFAULT_MEASURE_TIME;
+ }
+ 
+ static void
+@@ -555,6 +564,9 @@
+       case PROP_USERPOINTER:
+         v4l2sink->enableUserPtr = g_value_get_boolean (value);
+         break;
++      case PROP_MEASURE_TIME:
++        v4l2sink->measure_time = g_value_get_boolean (value);
++        break;
+       default:
+         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+         break;
+@@ -605,6 +617,9 @@
+       case PROP_USERPOINTER:
+        g_value_set_boolean (value, v4l2sink->enableUserPtr);
+         break;
++      case PROP_MEASURE_TIME:
++       g_value_set_boolean (value, v4l2sink->measure_time);
++        break;
+       default:
+         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+         break;
+@@ -1242,3 +1257,15 @@
+   }
+ }
+ #endif
++
++static void
++gst_v4l2sink_after_seek (GstBaseSink * bsink, GstPad * pad)
++ {
++	 GstV4l2Sink *v4l2sink = GST_V4L2SINK (bsink);
++	 GstEvent *event;
++
++	 if (v4l2sink->measure_time) {
++		event = gst_event_new_time ();
++		gst_pad_push_event(pad, event);
++	}
++ }
+Index: gst-plugins-good-0.10.31/src/sys/v4l2/gstv4l2sink.h
+===================================================================
+--- gst-plugins-good-0.10.31.orig/src/sys/v4l2/gstv4l2sink.h
++++ gst-plugins-good-0.10.31/src/sys/v4l2/gstv4l2sink.h
+@@ -79,6 +79,7 @@
+   GstBuffer **gst_buf_array;
+   gint queued_buff_count;
+   gboolean enableUserPtr;
++  gboolean measure_time;
+ };
+ 
+ struct _GstV4l2SinkClass {

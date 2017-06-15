@@ -1,0 +1,6 @@
+config FS_APPS_NEON_MEMCPY
+	bool "Neon Memory Copy"
+	depends on FS_APPS_GSTREAMER_PLUGINS_GOOD_NEON
+	default n
+	help
+	    NEON memory copy offers a better performance in comparison with C library memory copy function.

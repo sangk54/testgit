@@ -1,0 +1,3 @@
+add-missing-xdc-header-include.patch
+remove-help-menu-if-mmap-is-not-passed.patch
+dsp-xdctools-sections-directive-removal.patch

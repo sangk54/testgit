@@ -1,0 +1,145 @@
+Index: ridgerun-ui-demo/src/main.cpp
+===================================================================
+--- ridgerun-ui-demo.orig/src/main.cpp	2015-04-22 16:25:29.240137957 -0600
++++ ridgerun-ui-demo/src/main.cpp	2015-04-22 17:04:37.855885619 -0600
+@@ -4,50 +4,93 @@
+ #include "uihandler.h"
+ 
+ #ifdef __ARMEL__
+-#include <stdlib.h>
++#include <QWSServer>
++#include <linux/ti81xxfb.h>
+ #include <sys/ioctl.h>
+-#include <fcntl.h>
+ #include <unistd.h>
+-#include <video/davincifb_ioctl.h>
+-#include <QWSServer>
++#include <fcntl.h>
++#endif
+ 
++#ifdef __ARMEL__
+ /* This function set up the color key in the Davinci */
+ void fb_init (void){
+-    int fbfd;
+-    char enable = 1;
+-
+-    vpbe_bitmap_blend_params_t blendparam;
+-    vpbe_backg_color_t backg;
+ 
+-    blendparam.colorkey = 0xf81f;
+-    blendparam.enable_colorkeying = 1;
+-    blendparam.bf = 0;
+-
+-    backg.clut_select = 0;
+-    backg.color_offset = 255;
+-
+-    fbfd = open("/dev/fb0",O_RDWR);
+-    if (fbfd < 0){
+-        perror("Failed to open the framebuffer device");
+-        exit(-1);
++    /* Open a graphics fb0 Display logical channel in blocking mode */
++    QWSServer::setBackground(QBrush(QColor(0, 0, 0, 0)));
++    int fd = open ("/dev/fb0", O_RDWR);
++    if (fd == -1) {
++        perror("failed to open display device\n");
+     }
+ 
+-    if (ioctl(fbfd,FBIO_ENABLE_DISABLE_WIN,&enable) < 0){
+-        perror("Failed to enable the OSD window");
+-        exit(-1);
++	struct ti81xxfb_region_params  regp;
++    if (ioctl(fd, TIFB_GET_PARAMS, &regp) < 0) {
++        perror("TIFB_GET_PARAMS\n");
++            close(fd);
++        exit(1);
+     }
+ 
+-    if (ioctl(fbfd,FBIO_SET_BACKG_COLOR,&backg) < 0){
+-        perror("Failed to enable the OSD window: set background color");
+-        exit(-1);
++    /*Set Pixel Alpha Blending*/
++    regp.blendtype = TI81XXFB_BLENDING_PIXEL;
++    if (ioctl(fd, TIFB_SET_PARAMS, &regp) < 0) {
++        perror ("TIFB_SET_PARAMS.\n");
++        close(fd);
++        exit(1);
+     }
+ 
+-    if (ioctl(fbfd,FBIO_SET_BITMAP_BLEND_FACTOR,&blendparam) < 0){
+-        perror("Failed to set the blending factor");
+-        exit(-1);
++    /*Let's close fb0*/
++    close(fd);
++
++
++    /* Open fb1 and apply same settings*/
++    /*    fd = open ("/dev/fb1", O_RDWR);
++
++    if (fd == -1) {
++        perror("failed to open display device\n");
+     }
+ 
+-    close(fbfd);
++    if (ioctl(fd, TIFB_GET_PARAMS, &regp) < 0) {
++        perror("TIFB_GET_PARAMS\n");
++            close(fd);
++        exit(1);
++	}*/
++
++    /*Set Pixel Alpha Blending*/
++    regp.blendtype = TI81XXFB_BLENDING_PIXEL;
++    /* if (ioctl(fd, TIFB_SET_PARAMS, &regp) < 0) {
++        perror ("TIFB_SET_PARAMS.\n");
++        close(fd);
++        exit(1);
++	}*/
++
++    /* Scale Graphics to 720x480 */
++    /* struct ti81xxfb_scparams  scp, scp1;
++
++    scp.inwidth = 1920;
++	scp.inheight = 1080;
++
++	scp.outwidth = 720;
++	scp.outheight = 480;
++	scp.coeff = NULL;
++
++	int ret = ioctl(fd, TIFB_SET_SCINFO, &scp);
++
++	if (ret < 0) {
++		perror("Can not set coeff.\n");
++	}
++
++	ret = ioctl(fd, TIFB_GET_SCINFO, &scp1);
++
++	/* Enable the scaling */
++    /*regp.scalaren = TI81XXFB_FEATURE_ENABLE;
++	ret = ioctl(fd, TIFB_SET_PARAMS, &regp);
++
++	if (ret < 0) {
++		printf("failed to set reg params\n");
++		}*/
++
++    /*Let's close fb1*/
++	/* close(fd);*/
++
+ }
+ #endif
+ 
+@@ -80,6 +123,16 @@
+             qFatal("No mouse handler installed");
+     view.setWindowFlags(Qt::FramelessWindowHint);
+ #endif
++
++	// Set background as transparent and scale for SD
++	#ifdef __ARMEL__
++    fb_init();
++    //Currently we are running this twice because otherwise the scaler
++    //is not configured properly - partial solution that needs to be checked.
++    fb_init();
++	#endif
++
++	system("sleep 1");
+     view.show();
+ 
+     //Start up event system:

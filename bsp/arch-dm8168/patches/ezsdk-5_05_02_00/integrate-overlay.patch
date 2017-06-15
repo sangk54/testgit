@@ -1,0 +1,39 @@
+Index: ezsdk-5_05_02_00/ezsdk/component-sources/omx-ti81xx-src_05_02_00_48/src/ti/omx/comp/vdec/src/omx_vdec.c
+===================================================================
+--- ezsdk-5_05_02_00.orig/ezsdk/component-sources/omx-ti81xx-src_05_02_00_48/src/ti/omx/comp/vdec/src/omx_vdec.c	2013-07-01 17:06:55.065867614 -0600
++++ ezsdk-5_05_02_00/ezsdk/component-sources/omx-ti81xx-src_05_02_00_48/src/ti/omx/comp/vdec/src/omx_vdec.c	2013-07-01 17:07:53.341867838 -0600
+@@ -77,6 +77,8 @@
+ 
+ /*-------------------------program files -------------------------------------*/
+ #include "ti/omx/interfaces/openMaxv11/OMX_Core.h"
++#include "ti/omx/interfaces/openMaxv11/ivc1vdec.h"
++#include "ti/omx/interfaces/openMaxv11/ijpegvdec.h"
+ #include "OMX_TI_Index.h"
+ 
+ #include <omx_base.h>
+Index: ezsdk-5_05_02_00/ezsdk/Overlay.Makefile
+===================================================================
+--- ezsdk-5_05_02_00.orig/ezsdk/Overlay.Makefile	2013-07-01 17:07:24.665867728 -0600
++++ ezsdk-5_05_02_00/ezsdk/Overlay.Makefile	2013-07-01 17:08:20.301867942 -0600
+@@ -18,7 +18,7 @@
+ #==============================================================================
+ # Install components
+ #==============================================================================
+-components_install: syslink_install edma3lld_install omx_install
++components_install: syslink_install omx_install
+ 
+ #==============================================================================
+ # Clean up the targets built by 'make all'.
+@@ -141,9 +141,9 @@
+ 
+ omx_install:
+ 	install -d $(EXEC_DIR)/usr/share/ti/ti-omx
+-	for i in `find ${OMX_INSTALL_DIR}/bin -name "*.xv5T"`; do \
+-		install $$i ${EXEC_DIR}/usr/share/ti/ti-omx; \
+-	done
++#	for i in `find ${OMX_INSTALL_DIR}/bin -name "*.xv5T"`; do \
++#		install $$i ${EXEC_DIR}/usr/share/ti/ti-omx; \
++#	done
+ 	install -d $(EXEC_DIR)/usr/lib
+ 	install $(OMX_INSTALL_DIR)/lib/libtiomx.so.5.2 $(EXEC_DIR)/usr/lib/libtiomx.so.5.2
+ 	ln -sf libtiomx.so.5.2 $(EXEC_DIR)/usr/lib/libtiomx.so.5

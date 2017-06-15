@@ -1,0 +1,7 @@
+config PROPRIETARY_GST_RR_OMX_DM81XX
+	bool "gst-rr-openmax-dm81xx"
+	select PROPRIETARY_LIBOMX_DM81XX
+	default y
+	depends on PROPRIETARY_TI_CODECENGINE_DM8168 || PROPRIETARY_TI_CODECENGINE_DM8148
+	help
+	    RidgeRun Gst OpenMax plugins for dm81xx platform

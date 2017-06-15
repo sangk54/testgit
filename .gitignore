@@ -1,0 +1,65 @@
+# .gitignore file for RidgeRun SDK
+
+# editor derived files
+*~
+*.bak
+
+# make config derived items
+.distro.id
+.oscheck
+.system.id
+ConfigExtra
+*.o
+Apps.defs
+ConfigExtra.options
+hostreqs
+Config.fs
+conf
+mconf
+images
+local
+
+# make build derived items
+fs/fs
+fs/fsdev
+config.site
+config.site.d
+
+# RidgeRun integration directory derived items
+rrfetched
+rrpreconfig
+rrprepatch
+rrpatched
+rrpostpatch
+rrreconf
+rrconfigured
+rrbuilt
+rrinstalled
+gstplugin_install
+
+# quilt derived items
+.pc
+bootloader/*/series
+kernel/series
+fs/apps/*/series
+fs/host-apps/*/series
+proprietary/*/series
+
+# autotools derived items
+autotools_extra_flags
+
+x86_64
+arm
+kernel/src
+fs/apps/*/src
+fs/host-apps/*/src
+proprietary/*/src
+bootloader/*/src
+
+# hacks to be fixed at a later date
+# remove what follows to see what SDK changes are needed
+fs/toolchain.cmake
+fs/toolchain.sim.cmake
+bsp/mach-leopard/apps/Config.yocto
+fs/host-apps/usb_loader/imx_usb
+

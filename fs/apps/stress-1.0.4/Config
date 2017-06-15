@@ -1,0 +1,5 @@
+
+config FS_APPS_STRESSTEST
+	bool "stress 1.0.4"
+	help
+	  'stress' imposes certain types of compute stress on your system

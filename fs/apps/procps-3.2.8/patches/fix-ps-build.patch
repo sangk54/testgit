@@ -1,0 +1,13 @@
+Index: procps-3.2.8/src/ps/module.mk
+===================================================================
+--- procps-3.2.8.orig/src/ps/module.mk
++++ procps-3.2.8/src/ps/module.mk
+@@ -20,7 +20,7 @@ PS_X := COPYING HACKING TRANSLATION comm
+ TARFILES += $(PSSRC) $(addprefix ps/,$(PS_X))
+ 
+ ps/ps: $(PSOBJ) $(LIBPROC)
+-	$(CC) $(ALL_CFLAGS) $(ALL_LDFLAGS) -o $@ $^ $(ldl)
++	$(CC) $(ALL_CFLAGS) $(ALL_LDFLAGS) -o $@ $^ $(ldl) proc/libproc.a
+ 
+ # This just adds the stacktrace code
+ ps/debug: $(PSOBJ) stacktrace.o $(LIBPROC)

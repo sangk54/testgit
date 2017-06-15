@@ -1,0 +1,29 @@
+Index: ezsdk-5_05_02_00/ezsdk/component-sources/xdctools_3_23_03_53/packages/gnu/targets/arm/linkcmd.xdt
+===================================================================
+--- ezsdk-5_05_02_00.orig/ezsdk/component-sources/xdctools_3_23_03_53/packages/gnu/targets/arm/linkcmd.xdt	2013-10-21 13:44:48.738194068 -0600
++++ ezsdk-5_05_02_00/ezsdk/component-sources/xdctools_3_23_03_53/packages/gnu/targets/arm/linkcmd.xdt	2013-10-21 14:23:31.322306476 -0600
+@@ -35,24 +35,7 @@
+ )
+ %}
+ 
+-%if ("BINVERS" in prog.build.target) {
+-%    var _utils = xdc.loadCapsule("gnu/targets/linkUtils.xs");
+-SECTIONS {
+-`_utils.genSections(prog)`
+-}
+ 
+-%    if (!prog.build.target.noStdLinkScript
+-%        && prog.build.target.BINVERS >= "2.19") {
+-INSERT BEFORE .gnu.attributes
+-%    }
+-
+-%    if ("xdc.runtime" in xdc.om
+-%        && xdc.om['xdc.runtime.Text'].isLoaded != true) {
+-ASSERT(ADDR(xdc.noload) + SIZEOF(xdc.noload) < ADDR(.rodata)
+-    || ADDR(.rodata) + SIZEOF(.rodata) < ADDR(xdc.noload),
+-    "Sections .rodata and xdc.noload overlap. See xdc.runtime.Text.isLoaded for more.")
+-%    }
+-%}
+ %%{
+ /*
+  * @(#) gnu.targets.arm; 1, 0, 0, 0,364; 4-27-2012 17:31:24; /db/ztree/library/trees/xdctargets/xdctargets-f21x/src/ xlibrary
